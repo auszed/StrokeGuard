@@ -12,7 +12,7 @@ from sklearn.preprocessing import OneHotEncoder, StandardScaler, OrdinalEncoder
 from sklearn.pipeline import make_pipeline
 
 # model importation
-ensemble_model_001 = joblib.load('models/ensemble_model_001.pkl')
+# ensemble_model_001 = joblib.load('models/ensemble_model_001.pkl')
 GNB_002 = joblib.load('models/GNB_002.pkl')
 
 def preprocess_pipeline(dataset: pd.DataFrame, num_features: List, binary_cols: List,
@@ -105,11 +105,9 @@ def predict_or_analyze(data: pd.DataFrame, model_selection:str) -> tuple:
         value = GNB_002.predict(data_row_prediction)
         value_probabilities = GNB_002.predict_proba(data_row_prediction)
 
-    if model_selection == "Ensemble_model":
-        value = ensemble_model_001.predict(data_row_prediction)
-        value_probabilities = ensemble_model_001.predict_proba(data_row_prediction)
-        # value = ensemble_model_001.predict(data_for_prediction_array)
-        # value_probabilities = ensemble_model_001.predict_proba(data_for_prediction_array)
+    # if model_selection == "Ensemble_model":
+        # value = ensemble_model_001.predict(data_row_prediction)
+        # value_probabilities = ensemble_model_001.predict_proba(data_row_prediction)
 
     return value, value_probabilities
 
