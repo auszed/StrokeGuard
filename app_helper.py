@@ -12,7 +12,7 @@ from sklearn.preprocessing import OneHotEncoder, StandardScaler, OrdinalEncoder
 from sklearn.pipeline import make_pipeline
 
 # model importation
-# ensemble_model_001 = joblib.load('models/ensemble_model_002.pkl')
+ensemble_model_001 = joblib.load('models/ensemble_model_001.pkl')
 GNB_002 = joblib.load('models/GNB_002.pkl')
 
 def preprocess_pipeline(dataset: pd.DataFrame, num_features: List, binary_cols: List,
@@ -75,12 +75,13 @@ def predict_or_analyze(data: pd.DataFrame, model_selection:str) -> tuple:
         'hypertension': [1, 0, 1, 0, 1],
         'heart_disease': [1, 0, 1, 0, 0],
         'ever_married': ['Yes', 'No', 'Yes', 'No', 'No'],
-        'work_type': ['Private', 'Self-employed', 'Govt_job', 'Children', 'Never_worked'],
+        'work_type': ['Private', 'Self-employed', 'Govt_job', 'children', 'Never_worked'],
         'Residence_type': ['Urban', 'Rural', 'Urban', 'Rural', 'Urban'],
         'avg_glucose_level': [50, 100, 150, 200, 300],
         'bmi': [10, 20, 50, 80, 100],
         'smoking_status': ['never smoked', 'formerly smoked', 'smokes', 'Unknown', 'Unknown']
     }
+
     sample_data_all = pd.DataFrame(sample_data)
     df_concat = pd.concat([data, sample_data_all], ignore_index=True)
 
@@ -95,19 +96,31 @@ def predict_or_analyze(data: pd.DataFrame, model_selection:str) -> tuple:
     )
 
     # extract the value from the pipeline
-    data_for_prediction = dataset.iloc[0]
-    data_for_prediction_array = data_for_prediction.values.reshape(1, -1)
+    data_row = dataset.iloc[0]
+    data_row = data_row.to_frame()
+    data_row_prediction = data_row.transpose()
 
     # Predictions
     if model_selection == "GNB":
+        value = GNB_002.predict(data_row_prediction)
+        value_probabilities = GNB_002.predict_proba(data_row_prediction)
 
-        value = GNB_002.predict(data_for_prediction_array)
-        value_probabilities = GNB_002.predict_proba(data_for_prediction_array)
-
-    # if model_selection == "Ensemble_model":
-    #     value = ensemble_model_001.predict(data_for_prediction_array)
-    #     value_probabilities = ensemble_model_001.predict_proba(data_for_prediction_array)
+    if model_selection == "Ensemble_model":
+        value = ensemble_model_001.predict(data_row_prediction)
+        value_probabilities = ensemble_model_001.predict_proba(data_row_prediction)
+        # value = ensemble_model_001.predict(data_for_prediction_array)
+        # value_probabilities = ensemble_model_001.predict_proba(data_for_prediction_array)
 
     return value, value_probabilities
+
+
+def prediction_answer(prediction_value: int) -> str:
+    """Give me a string with the reccomendations we need to add in case the person need it"""
+    if prediction_value == 0:
+        return "Support others in stroke prevention by encouraging a healthy lifestyle, including balanced diet and regular exercise, advocating for periodic health check-ups, educating them about stroke symptoms and the importance of prompt medical attention, and providing emotional support and understanding."
+    elif prediction_value == 1:
+        return "To reduce the risk of stroke, individuals should prioritize regular medical check-ups, manage risk factors like high blood pressure and cholesterol through medication and lifestyle changes, maintain a healthy lifestyle with balanced diet and regular exercise, cease smoking and limit alcohol consumption, recognize stroke symptoms and act quickly, adhere to prescribed medication, develop an emergency plan, and stay informed about stroke prevention strategies and treatments. Consulting with healthcare professionals for personalized guidance is essential in stroke prevention efforts."
+    else:
+        return "None"
 
 

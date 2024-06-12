@@ -1,6 +1,6 @@
 import streamlit as st
 import pandas as pd
-from app_helper import predict_or_analyze
+from app_helper import predict_or_analyze, prediction_answer
 
 # Main function to run the app
 def main():
@@ -17,7 +17,7 @@ def main():
     # add the content by columns
     with col1:
         st.markdown('Gender')
-        input_gender = st.radio('', ['Male', 'Female', 'Other'], index =2)
+        input_gender = st.radio('', ['Male', 'Female', 'Other'], index =1)
 
     with col2:
         st.markdown('Age')
@@ -25,7 +25,7 @@ def main():
 
     with col3:
         st.markdown('Ever Married')
-        input_ever_married = st.radio('', ['Yes', 'No'])
+        input_ever_married = st.radio('', ['Yes', 'No'], )
 
     with col4:
         st.markdown('Work type')
@@ -41,14 +41,14 @@ def main():
 
     with col7:
         st.markdown('Hypertension')
-        transform_hypertension = st.radio('__', ['Yes', 'No'])
+        transform_hypertension = st.radio('__', ['Yes', 'No'],index =1)
         if transform_hypertension == 'Yes':
             input_hypertension = 1
         else:
             input_hypertension = 0
     with col8:
         st.markdown('Heart_disease')
-        transform_heart_disease = st.radio('_', ['Yes', 'No'])
+        transform_heart_disease = st.radio('_', ['Yes', 'No'],index =1)
         if transform_heart_disease == 'Yes':
             input_heart_disease = 1
         else:
@@ -82,14 +82,20 @@ def main():
         stroke_prob = round(result_probabilities[0][1] * 100, 6)
         no_stroke_prob = round(result_probabilities[0][0]*100,6)
 
+        # Add the content
+        st.write(data)
         if result == 0:
             st.success("It appears that the likelihood of us experiencing a stroke is low")
+
         elif result == 1:
             st.error("We might have experienced a stroke. Here's some advice if we notice any symptoms and what actions we can take to address them!")
 
         st.metric(label="Probability of having a stroke", value=stroke_prob)
         st.metric(label="Probability of not having a stroke", value=no_stroke_prob)
 
+        # content add it depending on the answer
+        answer = prediction_answer(result)
+        st.write(answer)
 
 
 if __name__ == '__main__':
